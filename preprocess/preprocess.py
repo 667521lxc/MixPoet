@@ -23,7 +23,7 @@ def parse_args():#解析参数num_unlabelled
 
 def outFile(data, file_name): #把data写入文件
     print ("output data to %s, num: %d" % (file_name, len(data)))
-    with open(file_name, 'w') as fout:
+    with open(file_name, 'w',encoding='utf-8') as fout:
         for d in data:
             fout.write(d+"\n")
 
@@ -93,7 +93,7 @@ class PreProcess(object):
         return dic, idic  #统计了一下高频，然后加入词典。dic和idic是互逆的关系
 
     def build_dic(self, infile):#读入infile文件
-        with open(infile, 'r') as fin:
+        with open(infile, 'r',encoding='utf-8') as fin:
             lines = fin.readlines()
 
         poems = []  #参见上面create_dic函数的poems
@@ -110,8 +110,8 @@ class PreProcess(object):
 
         # output dic file  存储字典和读取的诗歌txt
         # read
-        dic_file = "/kaggle/working/vocab.pickle"
-        idic_file = "/kaggle/working/ivocab.pickle"
+        dic_file = "D:/MixPoet-master/corpus/vocab.pickle"#"/kaggle/working/vocab.pickle"
+        idic_file = "D:/MixPoet-master/corpus/ivocab.pickle"#"/kaggle/working/ivocab.pickle"
 
         print ("saving dictionary to %s" % (dic_file))
         with open(dic_file, 'wb') as fout:
@@ -122,10 +122,10 @@ class PreProcess(object):
             pickle.dump(idic, fout, -1)
 
         # building training lines
-        outFile(training_lines, "/kaggle/working/training_lines.txt")
+        outFile(training_lines, "D:/MixPoet-master/data/training_lines.txt")#"/kaggle/working/training_lines.txt")
 
     def read_corpus(self, infile, with_label=False):   #这个数据集的lable是什么意思？？
-        with open(infile, 'r') as fin:
+        with open(infile, 'r',encoding='utf-8') as fin:
             lines = fin.readlines()
 
         corpus = []
@@ -192,7 +192,7 @@ class PreProcess(object):
 
 
     def build_test_data(self, infile, out_inp_file, out_trg_file):
-        with open(infile, 'r') as fin:
+        with open(infile, 'r',encoding='utf-8') as fin:
             lines = fin.readlines()
 
         keywords_vec = []
@@ -214,11 +214,14 @@ class PreProcess(object):
 
     def process(self, unlabelled_num=None):#这个可以看作类中的主函数
         # build the word dictionary
-        self.build_dic("/kaggle/input/poetry/CCPC/ccpc_train_v1.0.json")#self.build_dic("ccpc_train.json")
+        self.build_dic("D:/Datasets-master/CCPC/ccpc_train_v1.0.json")
+        #"/kaggle/input/poetry/CCPC/ccpc_train_v1.0.json")#self.build_dic("ccpc_train.json")
 
         # build training and validation datasets
-        unlabelled_train = self.read_corpus("/kaggle/input/poetry/CCPC/ccpc_train_v1.0.json", False)
-        unlabelled_valid = self.read_corpus("/kaggle/input/poetry/CCPC/ccpc_valid_v1.0.json", False)
+        unlabelled_train = self.read_corpus("D:/Datasets-master/CCPC/ccpc_train_v1.0.json", False)
+        #"/kaggle/input/poetry/CCPC/ccpc_train_v1.0.json", False)
+        unlabelled_valid = self.read_corpus("D:/Datasets-master/CCPC/ccpc_valid_v1.0.json", False)
+        #"/kaggle/input/poetry/CCPC/ccpc_valid_v1.0.json", False)
 
         if unlabelled_num is not None:
             unlabelled_train = random.sample(unlabelled_train, unlabelled_num)
@@ -235,18 +238,19 @@ class PreProcess(object):
         print ("training data: %d" % (len(semi_train_data)))
         print ("validation data: %d" % (len(semi_valid_data)))
 
-        train_file = "/kaggle/working/semi_train.pickle"
+        train_file = "D:/MixPoet-master/corpus/semi_train.pickle"#"/kaggle/working/semi_train.pickle"
         print ("saving training data to %s" % (train_file))
         with open(train_file, 'wb') as fout:
             pickle.dump(semi_train_data, fout, -1)
 
-        valid_file = "/kaggle/working/semi_valid.pickle"
+        valid_file = "D:/MixPoet-master/corpus/semi_valid.pickle"#"/kaggle/working/semi_valid.pickle"
         print ("saving validation data to %s" % (valid_file))
         with open(valid_file, 'wb') as fout:
             pickle.dump(semi_valid_data, fout, -1)
 
         # build testing inputs and trgs     这个地方要注意，因为kaggle 的inputdiamond文件无法修改只读，因此我把test_inps.txt放在了working文件夹
-        self.build_test_data("/kaggle/input/poetry/CCPC/ccpc_test_v1.0.json", "/kaggle/working/test_inps.txt", "/kaggle/working/test_trgs.txt")
+        #self.build_test_data("/kaggle/input/poetry/CCPC/ccpc_test_v1.0.json", "/kaggle/working/test_inps.txt", "/kaggle/working/test_trgs.txt")
+        self.build_test_data("D:/Datasets-master/CCPC/ccpc_test_v1.0.json", "D:/MixPoet-master/data/test_inps.txt", "D:/MixPoet-master/data/test_trgs.txt")
 
 
 def main():
